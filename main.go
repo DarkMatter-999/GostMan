@@ -30,10 +30,12 @@ func main() {
     app := app.New()
 
     window := app.NewWindow("GostMan REST API Client")
-    window.Resize(fyne.NewSize(600, 800))
+    window.Resize(fyne.NewSize(800, 800))
 
-    methodEntry := widget.NewEntry()
-    methodEntry.SetPlaceHolder("Method (GET, POST, etc.)")
+	httpMethods := []string{"GET", "POST", "PUT", "PATCH", "DELETE"}
+    methodEntry := widget.NewSelect(httpMethods, func(selected string) {
+	})
+    // methodEntry.SetPlaceHolder("Method (GET, POST, etc.)")
 
     urlEntry := widget.NewEntry()
     urlEntry.SetPlaceHolder("URL")
@@ -45,11 +47,11 @@ func main() {
     bodyEntry.SetPlaceHolder("Body (JSON format)")
 
 	responseEntry := widget.NewMultiLineEntry()
-    responseEntry.Disable()
+    // responseEntry.Disable()
 
     sendButton := widget.NewButton("Send Request", func() {
         req := Request{
-            Method:  methodEntry.Text,
+            Method:  methodEntry.Selected,
             URL:     urlEntry.Text,
             Headers: make(map[string]string),
             Body:    bodyEntry.Text,
@@ -71,15 +73,20 @@ func main() {
 		}
 	})
 
+	sendButton.Importance = widget.HighImportance
+
+	topBar := container.NewBorder(nil, nil,
+        methodEntry, sendButton,
+        urlEntry,
+    )
+
     form := container.NewVBox(
+        topBar,
         widget.NewForm(
-            widget.NewFormItem("Method", methodEntry),
-            widget.NewFormItem("URL", urlEntry),
             widget.NewFormItem("Headers", headersEntry),
             widget.NewFormItem("Body", bodyEntry),
         ),
-        sendButton,
-		widget.NewLabel("Response"),
+        widget.NewLabel("Response"),
     )
 
 	content := container.NewBorder(form, nil, nil, nil, container.NewVScroll(responseEntry))
