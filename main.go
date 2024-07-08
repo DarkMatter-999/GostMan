@@ -49,7 +49,9 @@ func main() {
 	responseEntry := widget.NewMultiLineEntry()
     // responseEntry.Disable()
 
-    sendButton := widget.NewButton("Send Request", func() {
+    status := widget.NewLabel("")
+
+    sendButton := widget.NewButton("Send", func() {
         req := Request{
             Method:  methodEntry.Selected,
             URL:     urlEntry.Text,
@@ -69,27 +71,37 @@ func main() {
 		if err != nil {
 			responseEntry.SetText(fmt.Sprintf("Error: %s", err))
 		} else {
-			responseEntry.SetText(fmt.Sprintf("Status: %d\n\n%s", res.StatusCode, res.Body))    
+			responseEntry.SetText(fmt.Sprintf("%s", res.Body))
+            status.SetText(fmt.Sprintf("Status: %d", res.StatusCode))
 		}
 	})
 
 	sendButton.Importance = widget.HighImportance
 
-	topBar := container.NewBorder(nil, nil,
-        methodEntry, sendButton,
-        urlEntry,
+	topBar := container.NewBorder(nil, nil, methodEntry, sendButton, urlEntry,)
+
+    dataTabs := container.NewAppTabs(
+        container.NewTabItem("Body", bodyEntry),
+        container.NewTabItem("Headers", headersEntry),
+		container.NewTabItem("Auth", widget.NewLabel("Authorization Section")),
     )
 
     form := container.NewVBox(
         topBar,
-        widget.NewForm(
-            widget.NewFormItem("Headers", headersEntry),
-            widget.NewFormItem("Body", bodyEntry),
-        ),
-        widget.NewLabel("Response"),
+        dataTabs,
     )
 
-	content := container.NewBorder(form, nil, nil, nil, container.NewVScroll(responseEntry))
+    tabs := container.NewAppTabs(
+		container.NewTabItem("Response", container.NewBorder(
+            status, 
+            nil, nil, nil,
+            container.NewVScroll(responseEntry),
+            )),
+	)
+
+    tabs.SetTabLocation(container.TabLocationTop)
+
+	content := container.NewBorder(form, nil, nil, nil, tabs)
 
     window.SetContent(content)
 
