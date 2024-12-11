@@ -1,8 +1,9 @@
 ## GostMan - Go REST API Client
 GostMan is a lightweight and easy-to-use REST API client written in Go. 
 
-![GostMan GET Request](./assets/GET.png) ![GostMan POST Request](./assets/POST.png)
-
+| | |
+| ------- | ------- |
+| ![GostMan GET Request](./assets/GET.png) | ![GostMan POST Request](./assets/POST.png) |
 
 ### Features
 REST Compatible, supports GET, POST, PUT, PATCH, DELETE methods.
